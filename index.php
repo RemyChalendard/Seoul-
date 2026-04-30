@@ -1,59 +1,83 @@
 <?php
-// var_dump($_ENV);
 include 'includes/header.php';
 require 'config.php';
 
 $pdo = Database::getInstance()->getPDO();
+
+// Charge immediatement la premiere image pour une meilleure performance perçue
+$isFirst = true;
 ?>
 
-<h1> <strong> Seoul - La ville de l'âme</strong></h1>
+<h1><strong>Seoul - La ville de l'âme</strong></h1>
 
 <?php
 try {
-  $requete = $pdo->prepare("SELECT * FROM articles WHERE CATEGORIE = 'Accueil' AND etat = 'publiée' ORDER BY date_creation ASC");
-  $requete->execute();
-  // Mode de récuperation des données sous forme de tableau associatif ou les clé sont les noms des colonnes
-  $evenements = $requete->fetchAll(PDO::FETCH_ASSOC);
+    $requete = $pdo->prepare("
+        SELECT * 
+        FROM articles 
+        WHERE CATEGORIE = 'Accueil' 
+        AND etat = 'publiée' 
+        ORDER BY date_creation ASC
+    ");
 
-  if ($evenements) {
-    foreach ($evenements as $event) {
+    $requete->execute();
+    $evenements = $requete->fetchAll(PDO::FETCH_ASSOC);
+
+    if ($evenements) {
+        foreach ($evenements as $event) {
 ?>
-      <div class="d-flex fd-row jc-c g-16">
-        <div class="f-1-1-300">
+            <div class="d-flex fd-row jc-c g-16">
 
-          <?php if (!empty($event['image'])): ?>
-            <?php
-            $image_src = '/' . ltrim($event['image'], '/'); 
-            ?>
+                <div class="f-1-1-300">
 
+                    <?php if (!empty($event['image'])): ?>
+                        <?php
+                        $image_src = '/' . ltrim($event['image'], '/');
+                        ?>
 
-<img class="art-img" src="<?php echo htmlspecialchars($image_src); ?>" alt="" width="450" height="277">
+                        <img
+                            class="art-img"
+                            src="<?php echo htmlspecialchars($image_src); ?>"
+                            alt="<?php echo htmlspecialchars($event['titre'] ?? 'Article image'); ?>"
+                            width="450"
+                            height="277"
+                            <?php if ($isFirst): ?>
+                                fetchpriority="high"
+                                loading="eager"
+                            <?php else: ?>
+                                loading="lazy"
+                            <?php endif; ?>
+                        >
 
-          <?php endif; ?>
-        </div>
+                    <?php endif; ?>
 
-        <div class="text">
-          <h2><?php echo htmlspecialchars($event['titre'] ?? "Article"); ?></h2>
-          <?php
-          $contenu = htmlspecialchars($event['contenu'] ?? "Non renseigné");
-          $contenu = str_replace(["\r\n", "\r"], "\n", $contenu);
-          $paragraphes = explode("\n", $contenu);
-          foreach ($paragraphes as $p) {
-            if (trim($p) !== '') {
-              echo "<p>" . $p . "</p>";
-            }
-          }
-          ?>
-        </div>
-      </div>
+                </div>
+
+                <div class="text">
+                    <h2><?php echo htmlspecialchars($event['titre'] ?? "Article"); ?></h2>
+
+                    <?php
+                    $contenu = htmlspecialchars($event['contenu'] ?? "Non renseigné");
+                    $contenu = str_replace(["\r\n", "\r"], "\n", $contenu);
+                    $paragraphes = explode("\n", $contenu);
+
+                    foreach ($paragraphes as $p) {
+                        if (trim($p) !== '') {
+                            echo "<p>" . $p . "</p>";
+                        }
+                    }
+                    ?>
+                </div>
+
+            </div>
 <?php
-
+            $isFirst = false;
+        }
+    } else {
+        echo "<p>Aucun quartier à afficher.</p>";
     }
-  } else {
-    echo "<p>Aucun quartier à afficher.</p>";
-  }
 } catch (PDOException $e) {
-  echo "Erreur : " . $e->getMessage();
+    echo "Erreur : " . $e->getMessage();
 }
 ?>
 

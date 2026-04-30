@@ -4,6 +4,10 @@
   box-sizing: border-box;
 }
 
+img {
+  height: auto;
+}
+
 main {
   background-color: white;
 }
