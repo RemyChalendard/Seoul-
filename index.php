@@ -74,7 +74,7 @@ try {
             $isFirst = false;
         }
     } else {
-        echo "<p>Aucun quartier à afficher.</p>";
+        echo "<p>Aucun articles à afficher.</p>";
     }
 } catch (PDOException $e) {
     echo "Erreur : " . $e->getMessage();
