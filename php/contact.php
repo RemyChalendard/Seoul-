@@ -38,7 +38,7 @@ $pdo = Database::getInstance()->getPDO();
   }
 </style>
 
-<?php
+<?php // Controller
 // Traiter le formulaire
 if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $nom = $_POST['nom'] ?? '';
@@ -46,7 +46,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     $mail = $_POST['mail'] ?? '';
     $message = $_POST['message'] ?? '';
     
-    // Validation basique
+    // Validation basique // Modele
     if(!empty($nom) && !empty($prenom) && !empty($mail) && !empty($message)){
         try {
             $stmt = $pdo->prepare("INSERT INTO contact_messages (nom, prenom, email, message) VALUES (:nom, :prenom, :email, :message)");
@@ -57,6 +57,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
                 ':message' => $message
             ]);
             
+            // Vue
             $success_message = "✓ Votre message a été envoyé avec succès !";
         } catch (PDOException $e) {
             $error_message = "Erreur lors de l'envoi du message. Veuillez réessayer.";
@@ -66,7 +67,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     }
 }
 ?>
-
+ 
+ // Vue
 <?php if(isset($success_message)): ?>
     <div class="message-success"><?= $success_message ?></div>
 <?php endif; ?>
@@ -75,6 +77,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST'){
     <div class="message-error"><?= $error_message ?></div>
 <?php endif; ?>
 
+// Vue
 <div class="d-flex fd-row jc-c g-16">
   <div class="f-1-1-300">
     <form id="contactForm" method="POST" action="">

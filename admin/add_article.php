@@ -39,13 +39,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ]);
             $success = true;
         } catch (PDOException $e) {
-            echo "❌ Erreur : " . $e->getMessage();
+            echo " Erreur : " . $e->getMessage();
         }
     }
 }
 
 if ($success) {
-    echo "✅ Article créé avec succès ! Redirection dans 5 secondes...";
+    echo "Article créé avec succès ! Redirection dans 5 secondes...";
     echo "<script>
         setTimeout(function() {
             window.location.href = 'dashboard.php';
